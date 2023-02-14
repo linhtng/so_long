@@ -85,8 +85,6 @@ int	path_exist(t_map *path, char start, char des)
 	int	j;
 
 	i = 1;
-	//print_arr(check_path->map);
-	//print_arr(check_path->visited);
 	while (i < path->lines)
 	{
 		j = 0;
@@ -95,7 +93,10 @@ int	path_exist(t_map *path, char start, char des)
 			if (path->map[i][j] == start && path->visited[i][j] == '0')
 			{
 				if (is_path(path, i, j, des))
+				{
+					reset_visited(path);
 					return (1);
+				}
 			}
 			j++;
 		}
@@ -126,14 +127,24 @@ int	valid_path(char **map, int lines, int columns, int collectibles)
 	check_path->map = map;
 	check_path->visited = visited_cells;
 	check_path->collects = collectibles;
-	/* check_path->start = 'P';
-	check_path->collect = 'C';
-	check_path->exit = 'E'; */
 	if (path_exist(check_path, 'P', 'C'))
 		ft_printf("Path from P to C exit.\n");
-	reset_visited(check_path);
-	if (path_exist(check_path, 'C', 'E'))
-		ft_printf("Path from C to E exit.\n");
-	//print_arr(visited_cells);
+	if (collectibles == 1)
+	{
+		if (path_exist(check_path, 'C', 'E'))
+			ft_printf("Path from C to E exit.\n");
+	}
+	/* else if (collectibles > 1)
+	{
+		//currently stuck here 'cause we need the reset the visited matrix after each time finding a path,
+		before finding the path again, otherwise that cell 'C' still marked as visited from previous call and won't
+		be checked as starting point in path_exist(check_path, 'C', 'E'). But once reset, we don't know which
+		C is used as start in that function call?
+		if (path_exist(check_path, 'C', 'C'))
+		{
+			if (path_exist(check_path, 'C', 'E'))
+				ft_printf("Path from C to E exit.\n");
+		}
+	} */
 	return (0);
 }
