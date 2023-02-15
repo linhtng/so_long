@@ -104,8 +104,8 @@ int	wall_only(char *str)
 /* valid_walled:
 *	Example:
 *	A-------B
-*	|		|
-*	|		|
+*	|	|
+*	|	|
 *	D-------C
 */
 
