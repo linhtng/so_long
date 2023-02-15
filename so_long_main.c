@@ -184,7 +184,11 @@ char	**get_valid_map(char **argv, int fd)
 		columns = ft_strlen(map[0]);
 		rectangular_check(map, lines, columns, arr_len);
 		valid_walls(map, lines, columns);
-		valid_path(map, lines, columns, collectibles);
+		if (!valid_path(map, lines, columns, collectibles))
+		{
+			free(map);
+			clean_exit("Valid path check failed.");
+		}
 	}
 	return (map);
 }
