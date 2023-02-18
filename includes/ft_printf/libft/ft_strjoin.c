@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "libft.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	int		len1;
 	int		len2;
@@ -24,12 +24,14 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (ft_strdup(s2));
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
-	ret = len1 + len2 + 1;
-	res = (char *) malloc(sizeof(*s1) * ret);
+	ret = len1 + len2;
+	res = (char *) malloc(sizeof(*s1) * (ret + 1));
 	if (!res)
 		return (NULL);
 	ft_memmove(res, s1, len1);
-	res[len1] = '\0';
-	ft_strlcat(res, s2, ret);
+	ft_memmove(&res[len1], s2, len2);
+	res[ret] = '\0';
+	if (s1)
+		free(s1);
 	return (res);
 }

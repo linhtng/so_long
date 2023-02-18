@@ -63,7 +63,7 @@ static int	free_arr(char **arr, size_t n)
 	return (0);
 }
 
-static int	do_split(char **arr, char const *s, char c, int *arr_len)
+static int	do_split(char **arr, char const *s, char c)
 {
 	size_t		i;
 	int			j;
@@ -83,7 +83,6 @@ static int	do_split(char **arr, char const *s, char c, int *arr_len)
 			arr[j] = ft_substr(s, word_start, i - word_start);
 			if (!arr[j])
 				return (free_arr(arr, j));
-			(*arr_len) += i - word_start;
 			j++;
 			word_start = -1;
 		}
@@ -92,7 +91,7 @@ static int	do_split(char **arr, char const *s, char c, int *arr_len)
 	return (j);
 }
 
-char	**ft_split(char const *s, char c, int *arr_len)
+char	**ft_split(char const *s, char c)
 {
 	char		**arr;
 	int			elem;
@@ -100,6 +99,6 @@ char	**ft_split(char const *s, char c, int *arr_len)
 	arr = make_arr(s, c);
 	if (!arr)
 		return (NULL);
-	elem = do_split(arr, s, c, arr_len);
+	elem = do_split(arr, s, c);
 	return (arr);
 }
