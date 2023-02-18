@@ -19,6 +19,15 @@ void	clean_exit(char *message)
 	exit(0);
 }
 
+void	malloc_error(char *message, char **mem1, char **mem2)
+{
+	if (mem1)
+		free_arr(mem1);
+	if (mem2)
+		free_arr(mem2);
+	clean_exit(message);
+}
+
 void	free_arr(char **arr)
 {
 	int	i;
@@ -32,6 +41,37 @@ void	free_arr(char **arr)
 	free(arr);
 }
 
+int	count_occurences(char *str, char c)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == c)
+			count++;
+		i++;
+	}
+	return (count);
+}
+
+int	count_occurences_arr(char **arr, int lines, char c)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = 0;
+	while (i < lines)
+	{
+		count += count_occurences(arr[i], c);
+		i++;
+	}
+	return (count);
+}
+
 void	print_arr(char **arr)
 {
 	int	i;
@@ -40,9 +80,9 @@ void	print_arr(char **arr)
 	while (arr[i] != NULL)
 	{
 		ft_printf("%s\n", arr[i]);
-		free(arr[i]);
+		//free(arr[i]);
 		i++;
 	}
-	if (arr)
-		free(arr);
+	//if (arr)
+		//free(arr);
 }

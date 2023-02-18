@@ -12,88 +12,7 @@
 
 #include "so_long.h"
 
-int	cell_inbound(int i, int j, int lines, int columns)
-{
-	return (i >= 0 && i < lines && j >= 0 && j < columns);
-}
-
-char	**empty_map(char **map, int lines, int columns)
-{
-	char	**empty_map;
-	int		i;
-
-	empty_map = (char **) malloc(sizeof(char *) * (lines + 1));
-	if (!empty_map)
-	{
-		free_arr(map);
-		clean_exit("Empty map array allocation failed.\n");
-	}
-	i = 0;
-	while (i < lines)
-	{
-		empty_map[i] = (char *) malloc(sizeof(char) * (columns + 1));
-		if (!empty_map[i])
-		{
-			free_arr(map);
-			free_arr(empty_map);
-			clean_exit("Empty map array allocation failed.\n");
-		}
-		ft_memset(empty_map[i], '0', columns);
-		empty_map[i][columns] = '\0';
-		i++;
-	}
-	empty_map[lines] = NULL;
-	return (empty_map);
-}
-
-char	**ft_arrdup(char **map, int lines)
-{
-	char	**dup;
-	int		i;
-
-	dup = (char **) malloc(sizeof(char *) * (lines + 1));
-	if (!dup)
-	{
-		free_arr(map);
-		clean_exit("Duplicate map array allocation failed.\n");
-	}
-	i = 0;
-	while (i < lines)
-	{
-		dup[i] = ft_strdup(map[i]);
-		if (!dup[i])
-		{
-			free_arr(map);
-			free_arr(dup);
-			clean_exit("Duplicate map array allocation failed.\n");
-		}
-		i++;
-	}
-	dup[lines] = NULL;
-	return (dup);
-}
-
-/* int	is_path(t_map *path, int i, int j, char des)
-{
-	if (cell_inbound(i, j, path->lines, path->columns) && path->map[i][j] != '1'
-	&& path->visited[i][j] == '0')
-	{
-		path->visited[i][j] = 1;
-		if (path->map[i][j] == des)
-			return (1);
-		if (is_path(path, i - 1, j, des))
-			return (1);
-		if (is_path(path, i + 1, j, des))
-			return (1);
-		if (is_path(path, i, j - 1, des))
-			return (1);
-		if (is_path(path, i, j + 1, des))
-			return (1);
-	}
-	return (0);
-} */
-
-int	is_path(t_map *path, int i, int j, char des)
+int	is_path(t_validpath *path, int i, int j, char des)
 {
 	if (cell_inbound(i, j, path->lines, path->columns) && path->map[i][j] != '1'
 	&& path->visited[i][j] == '0')
@@ -118,20 +37,7 @@ int	is_path(t_map *path, int i, int j, char des)
 	return (0);
 }
 
-void	reset_visited(t_map *check_path)
-{
-	int		i;
-
-	i = 0;
-	while (i < check_path->lines)
-	{
-		ft_memset(check_path->visited[i], '0', check_path->columns);
-		check_path->visited[i][check_path->columns] = '\0';
-		i++;
-	}
-}
-
-int	path_exist(t_map *path, char start, char des)
+int	path_to_exit(t_validpath *path, char start, char des)
 {
 	int	i;
 	int	j;
@@ -154,7 +60,28 @@ int	path_exist(t_map *path, char start, char des)
 	return (0);
 }
 
-int	path_exist_multi_c(t_map *path, char start, char des, int collectibles)
+int	path_for_multi_c(t_validpath *path, int i, int j, int collectibles)
+{
+	while (collectibles > 0)
+	{
+		collectibles--;
+		if (is_path(path, i, j, 'C'))
+		{
+			i = path->new_start_i;
+			j = path->new_start_j;
+			path->map[i][j] = '2';
+			reset_visited(path);
+		}
+	}
+	if (path->collects == 0)
+	{
+		path->map[i][j] = 'C';
+		return (1);
+	}
+	return (0);
+}
+
+int	path_to_collect(t_validpath *path, char start, char des, int collectibles)
 {
 	int	i;
 	int	j;
@@ -167,21 +94,13 @@ int	path_exist_multi_c(t_map *path, char start, char des, int collectibles)
 		{
 			if (path->map[i][j] == start)
 			{
-				while (collectibles > 0)
+				if (collectibles == 1)
 				{
-					collectibles--;
 					if (is_path(path, i, j, des))
-					{
-						i = path->new_start_i;
-						j = path->new_start_j;
-						/* ft_printf("%d\n", i);
-						ft_printf("%d\n", j); */
-						path->map[i][j] = 0 - collectibles + 3 + '0';
-						reset_visited(path);
-					}
+						return (1);
 				}
-				if (path->collects == 0)
-					return (1);
+				else
+					return (path_for_multi_c(path, i, j, collectibles));
 			}
 			j++;
 		}
@@ -190,58 +109,29 @@ int	path_exist_multi_c(t_map *path, char start, char des, int collectibles)
 	return (0);
 }
 
-int	valid_path(char **map, int lines, int columns, int collectibles)
+void	valid_path(char **map, int lines, int columns)
 {
-	char	**visited_cells;
-	t_map	*check_path;
-	int		i;
-	int		j;
+	t_validpath	*check_path;
+	int			collectibles;
 
-	i = 0;
-	j = 0;
-	visited_cells = empty_map(map, lines, columns);
-	check_path = (t_map *) malloc(sizeof(t_map));
+	check_path = (t_validpath *) malloc(sizeof(t_validpath));
 	if (!check_path)
 	{
 		free_arr(map);
-		free_arr(visited_cells);
 		clean_exit("Check valid path map struct allocation failed.\n");
 	}
 	check_path->lines = lines;
 	check_path->columns = columns;
-	check_path->map = ft_arrdup(map, lines);
-	check_path->visited = visited_cells;
+	check_path->map = ft_arrdup(map, lines, check_path);
+	check_path->visited = empty_map(map, check_path, lines, columns);
+	collectibles = count_occurences_arr(map, lines, 'C');
 	check_path->collects = collectibles;
-	/* ft_printf("%d\n", check_path->new_start_i);
-	ft_printf("%d\n", check_path->new_start_j); */
-	if (collectibles == 1)
+	if (path_to_collect(check_path, 'P', 'C', collectibles))
 	{
-		if (path_exist(check_path, 'P', 'C'))
-		{
-			ft_printf("Path from P to C exist.\n");
-			return (1);
-		}
-		/* reset_visited(check_path);
-		if (path_exist(check_path, 'C', 'E'))
-			ft_printf("Path from C to E exit.\n"); */
-	//ft_printf("%d\n", check_path->new_start_i);
-	//ft_printf("%d\n", check_path->new_start_j);
+		reset_visited(check_path);
+		if (!path_to_exit(check_path, 'C', 'E'))
+			invalid_path_exit(map, check_path, "No valid path to E.\n");
 	}
-	else if (collectibles > 1)
-	{
-		if (path_exist_multi_c(check_path, 'P', 'C', collectibles))
-		{
-			reset_visited(check_path);
-			ft_printf("check_path->map:\n");
-			print_arr(check_path->map);
-			ft_printf("\n");
-			if (path_exist(check_path, collectibles + 1 + '0', 'E'))
-				return (1);
-			else
-				ft_printf("Can't go from the last C to E.\n");
-		}
-		else
-			ft_printf("No path to collect all C.\n");
-	}
-	return (0);
+	else
+		invalid_path_exit(map, check_path, "No valid path to collect all C.\n");
 }

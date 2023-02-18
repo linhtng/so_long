@@ -17,6 +17,7 @@ CFLAGS = -Wall -Wextra -Werror -g3
 SRC = so_long_main.c \
 	so_long_utils.c \
 	so_long_valid_path.c \
+	so_long_valid_path_utils.c \
 
 OBJSFD 	= objs
 
