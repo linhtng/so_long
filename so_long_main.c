@@ -54,7 +54,7 @@ void	valid_characters_check(char *line, char *valid_chars, char *map_string)
 	}
 }
 
-void	cep_check(char *map_str)
+void	cep0_check(char *map_str, t_components *game_comps)
 {
 	int	exit_num;
 	int	collect;
@@ -63,6 +63,7 @@ void	cep_check(char *map_str)
 
 	exit_num = count_occurences(map_str, 'E');
 	collect = count_occurences(map_str, 'C');
+	game_comps->collectibles = collect;
 	start_pos = count_occurences(map_str, 'P');
 	free_space = count_occurences(map_str, '0');
 	if (!(exit_num == 1 && collect >= 1 && start_pos == 1 && free_space >= 1))
@@ -124,7 +125,7 @@ void	valid_walls(char **map, int lines, int columns)
 	}
 }
 
-char	*get_map_string(int fd, int *lines)
+char	*get_map_string(int fd, t_components *game_comp)
 {
 	char	*buf;
 	char	*map_string;
@@ -140,19 +141,19 @@ char	*get_map_string(int fd, int *lines)
 			free(buf);
 			clean_exit("Map string allocation failed.\n");
 		}
-		(*lines)++;
+		game_comp->lines++;
 		free(buf);
 		buf = get_next_line(fd);
 	}
 	return(map_string);
 }
 
-char	**get_map_array(char *map_str)
+char	**get_map_array(char *map_str, t_components *game_comps)
 {
 	char	**map;
 
 	map = NULL;
-	cep_check(map_str);
+	cep0_check(map_str, game_comps);
 	map = ft_split(map_str, '\n');
 	if (!map)
 	{
@@ -163,48 +164,67 @@ char	**get_map_array(char *map_str)
 	return (map);
 }
 
-char	**get_valid_map(int fd)
+char	**get_valid_map(int fd, t_components *game_comps)
 {
 	char	**map;
 	char	*map_string;
-	int		lines;
-	int		columns;
 	int		arr_len;
 
-	lines = 0;
-	columns = 0;
 	arr_len = 0;
 	map = NULL;
-	map_string = get_map_string(fd, &lines);
+	map_string = get_map_string(fd, game_comps);
 	arr_len = ft_strlen(map_string) - count_occurences(map_string, '\n');
 	if (map_string)
-		map = get_map_array(map_string);
+		map = get_map_array(map_string, game_comps);
 	else
 		clean_exit("Map is empty.\n");
 	if (map)
 	{
-		columns = ft_strlen(map[0]);
-		rectangular_check(map, lines, columns, arr_len);
-		valid_walls(map, lines, columns);
-		valid_path(map, lines, columns);
+		game_comps->columns = ft_strlen(map[0]);
+		rectangular_check(map, game_comps->lines, game_comps->columns, arr_len);
+		valid_walls(map, game_comps->lines, game_comps->columns);
+		valid_path(map, game_comps->lines, game_comps->columns, game_comps);
 	}
 	return (map);
 }
 
+void	game_comps_init(t_components *game_comps)
+{
+	game_comps->lines = 0;
+	game_comps->columns = 0;
+	game_comps->collectibles = 0;
+	game_comps->player_pos.row = 0;
+	game_comps->player_pos.col = 0;
+	game_comps->exit_pos.row = 0;
+	game_comps->exit_pos.col = 0;
+}
+
+void	print_game_comps(t_components *game_comps)
+{
+	ft_printf("Lines: %d\n", game_comps->lines);
+	ft_printf("Columns: %d\n", game_comps->columns);
+	ft_printf("Collectibles: %d\n", game_comps->collectibles);
+	ft_printf("Player x: %d\n", game_comps->player_pos.row);
+	ft_printf("Player y: %d\n", game_comps->player_pos.col);
+	ft_printf("Exit x: %d\n", game_comps->exit_pos.row);
+	ft_printf("Exit y: %d\n", game_comps->exit_pos.col);
+}
+
 int	main(int argc, char **argv)
 {
-	int		fd;
-	char	**map;
+	int				fd;
+	t_components	game_comps;
+	char			**map;
 
 	if (argc == 2)
 	{
-		fd = open(argv[1], O_RDONLY);
+		fd = open(argv[1], O_RDONLY);	
 		if (fd == -1)
 			clean_exit("File cannot be opened.\n");
 		correct_extension(argv[1]);
-		map = get_valid_map(fd);
-		if (map)
-			print_arr(map);
+		game_comps_init(&game_comps);
+		map = get_valid_map(fd, &game_comps);
+		print_game_comps(&game_comps);
 	}
 	else
 		clean_exit("Number of parameters must be 1.\n");

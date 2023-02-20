@@ -22,7 +22,6 @@ int	is_path(t_validpath *path, int i, int j, char des)
 		{
 			path->new_start_i = i;
 			path->new_start_j = j;
-			path->collects--;
 			return (1);
 		}
 		if (is_path(path, i - 1, j, des))
@@ -37,12 +36,13 @@ int	is_path(t_validpath *path, int i, int j, char des)
 	return (0);
 }
 
-int	path_to_exit(t_validpath *path, char start, char des)
+int	path_to_exit(t_validpath *path, char start, char des, t_components *g_comps)
 {
 	int	i;
 	int	j;
 
 	i = 1;
+	reset_visited(path);
 	while (i < path->lines)
 	{
 		j = 0;
@@ -51,7 +51,11 @@ int	path_to_exit(t_validpath *path, char start, char des)
 			if (path->map[i][j] == start)
 			{
 				if (is_path(path, i, j, des))
+				{
+					g_comps->exit_pos.row = path->new_start_i;
+					g_comps->exit_pos.col = path->new_start_j;
 					return (1);
+				}
 			}
 			j++;
 		}
@@ -70,6 +74,7 @@ int	path_for_multi_c(t_validpath *path, int i, int j, int collectibles)
 			i = path->new_start_i;
 			j = path->new_start_j;
 			path->map[i][j] = '2';
+			path->collects--;
 			reset_visited(path);
 		}
 	}
@@ -81,7 +86,7 @@ int	path_for_multi_c(t_validpath *path, int i, int j, int collectibles)
 	return (0);
 }
 
-int	path_to_collect(t_validpath *path, char start, char des, int collectibles)
+int	path_to_all_c(t_validpath *path, char start, char des, t_components *gcomps)
 {
 	int	i;
 	int	j;
@@ -94,13 +99,12 @@ int	path_to_collect(t_validpath *path, char start, char des, int collectibles)
 		{
 			if (path->map[i][j] == start)
 			{
-				if (collectibles == 1)
-				{
-					if (is_path(path, i, j, des))
-						return (1);
-				}
+				gcomps->player_pos.row = i;
+				gcomps->player_pos.col = j;
+				if (gcomps->collectibles == 1)
+					return (is_path(path, i, j, des));
 				else
-					return (path_for_multi_c(path, i, j, collectibles));
+					return (path_for_multi_c(path, i, j, gcomps->collectibles));
 			}
 			j++;
 		}
@@ -109,10 +113,9 @@ int	path_to_collect(t_validpath *path, char start, char des, int collectibles)
 	return (0);
 }
 
-void	valid_path(char **map, int lines, int columns)
+void	valid_path(char **map, int lines, int columns, t_components *game_comps)
 {
 	t_validpath	*check_path;
-	int			collectibles;
 
 	check_path = (t_validpath *) malloc(sizeof(t_validpath));
 	if (!check_path)
@@ -124,14 +127,15 @@ void	valid_path(char **map, int lines, int columns)
 	check_path->columns = columns;
 	check_path->map = ft_arrdup(map, lines, check_path);
 	check_path->visited = empty_map(map, check_path, lines, columns);
-	collectibles = count_occurences_arr(map, lines, 'C');
-	check_path->collects = collectibles;
-	if (path_to_collect(check_path, 'P', 'C', collectibles))
+	check_path->collects = game_comps->collectibles;
+	if (path_to_all_c(check_path, 'P', 'C', game_comps))
 	{
-		reset_visited(check_path);
-		if (!path_to_exit(check_path, 'C', 'E'))
+		if (!path_to_exit(check_path, 'C', 'E', game_comps))
 			invalid_path_exit(map, check_path, "No valid path to E.\n");
 	}
 	else
 		invalid_path_exit(map, check_path, "No valid path to collect all C.\n");
+	free_arr(check_path->map);
+	free_arr(check_path->visited);
+	free(check_path);
 }
