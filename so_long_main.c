@@ -210,6 +210,77 @@ void	print_game_comps(t_components *game_comps)
 	ft_printf("Exit y: %d\n", game_comps->exit_pos.col);
 }
 
+int	close_window(t_game *game)
+{
+	mlx_destroy_window(game->mlx, game->window);
+	free_arr(game->map_arr);
+	exit(0);
+}
+
+t_image	new_sprite(void *mlx, char *img_addr)
+{
+	t_image	sprite;
+
+	sprite.size.col = 0;
+	sprite.size.row = 0;
+	sprite.reference = mlx_xpm_file_to_image(mlx, img_addr, &sprite.size.col, &sprite.size.row);
+	return (sprite);
+}
+
+void	sprite_init(t_game *game)
+{
+	game->wall = new_sprite(game->mlx, "./sprites/walls.xpm");
+	game->collect = new_sprite(game->mlx, "./sprites/chest0.xpm");
+	game->player = new_sprite(game->mlx, "./sprites/player.xpm");
+	game->exit = new_sprite(game->mlx, "./sprites/door0.xpm");
+}
+
+void	assign_img(t_game *game, char c, int x, int y)
+{
+	if (c == '1')
+		mlx_put_image_to_window(game->mlx, game->window, game->wall.reference, x, y);
+	if (c == 'C')
+		mlx_put_image_to_window(game->mlx, game->window, game->collect.reference, x, y);
+	if (c == 'E')
+		mlx_put_image_to_window(game->mlx, game->window, game->exit.reference, x, y);
+	if (c == 'P')
+		mlx_put_image_to_window(game->mlx, game->window, game->player.reference, x, y);
+}
+
+void	load_image(t_game game, char **map_arr)
+{
+	int	row;;
+	int	col;
+
+	row = 0;
+	while (row < game.game_comps.lines)
+	{
+		col = 0;
+		while (map_arr[row][col] != '\0')
+		{
+			assign_img(&game, map_arr[row][col], col * SIZE, row * SIZE);
+			col++;
+		}
+		row++;
+	}
+}
+
+void	game_init(char **map_arr, t_components game_comps)
+{
+	t_game	game;
+
+	game.mlx = mlx_init();
+	game.window_height = game_comps.lines * SIZE;
+	game.window_width = game_comps.columns * SIZE;
+	game.window = mlx_new_window(game.mlx, game.window_width, game.window_height, "so_long");
+	game.map_arr = map_arr;
+	game.game_comps = game_comps;
+	sprite_init(&game);
+	load_image(game, map_arr);
+	mlx_hook(game.window, 17, 0, close_window, &game);
+	mlx_loop(game.mlx);
+}
+
 int	main(int argc, char **argv)
 {
 	int				fd;
@@ -224,7 +295,8 @@ int	main(int argc, char **argv)
 		correct_extension(argv[1]);
 		game_comps_init(&game_comps);
 		map = get_valid_map(fd, &game_comps);
-		print_game_comps(&game_comps);
+		if (map)
+			game_init(map, game_comps);
 	}
 	else
 		clean_exit("Number of parameters must be 1.\n");
