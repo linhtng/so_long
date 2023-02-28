@@ -6,7 +6,7 @@
 /*   By: thuynguy <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/09 18:11:05 by thuynguy          #+#    #+#             */
-/*   Updated: 2023/02/09 18:11:11 by thuynguy         ###   ########.fr       */
+/*   Updated: 2023/02/28 17:01:54 by thuynguy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef SO_LONG_H
@@ -20,67 +20,126 @@
 # include <unistd.h>
 # ifndef SIZE
 #  define SIZE 32
+#  ifndef MAX_HEIGHT
+#   define MAX_HEIGHT 49
+#   ifndef MAX_WIDTH
+#    define MAX_WIDTH 88
+#   endif
+#  endif
 # endif
 
 typedef struct s_validpath
 {
-	int     lines;
-	int     columns;
-    char    **map;
-    char    **visited;
-    int     collects;
-    int     new_start_i;
-    int     new_start_j;
+	int		lines;
+	int		columns;
+	char	**map;
+	char	**visited;
+	int		collects;
+	int		new_start_i;
+	int		new_start_j;
 }	t_validpath;
+
+enum	e_key
+{
+	UP = 13,
+	DOWN = 1,
+	LEFT = 0,
+	RIGHT = 2,
+	ESC = 53
+};
 
 typedef struct s_vector
 {
-    int     row;
-    int     col;
+	int	y;
+	int	x;
 }	t_vector;
 
 typedef struct s_components
 {
-	int         lines;
-	int         columns;
-    int         collectibles;
-    t_vector    player_pos;
-    t_vector    exit_pos;
+	int			lines;
+	int			columns;
+	int			c_num;
+	t_vector	player_pos;
+	t_vector	exit_pos;
 }	t_components;
 
 typedef struct s_image
 {
-	void        *reference;
-    t_vector    size;
+	void		*reference;
+	t_vector	size;
 }	t_image;
+
+typedef struct s_collect
+{
+	t_image		sprite;
+	t_vector	position;
+}	t_collect;
+
+typedef struct s_player
+{
+	t_image		sprite;
+	t_vector	pos;
+	int			gone;
+}	t_player;
 
 typedef struct s_game
 {
-    void            *mlx;
-    void            *window;
-    t_image         collect;
-    t_image         player;
-    t_image         wall;
-    t_image         exit;
-    char            **map_arr;
-    int             window_height;
-    int             window_width;
-    t_components    game_comps;
+	void			*mlx;
+	void			*window;
+	t_collect		collect;
+	t_player		player;
+	t_image			wall;
+	t_image			exit;
+	t_image			exit_open;
+	t_image			floor;
+	char			**map;
+	int				window_height;
+	int				window_width;
+	int				moves;
+	int				end_game;
+	int				passed_exit;
+	t_components	comps;
 }	t_game;
 
-void	clean_exit(char *message);
-void	free_arr(char **arr);
-void	valid_path(char **map, int lines, int columns, t_components *game_comps);
-void	print_arr(char **arr);
-void	malloc_error(char *message, char **mem1, char **mem2);
-int	    count_occurences(char *str, char c);
-int	    count_occurences_arr(char **arr, int lines, char c);
-
 /* so_long_valid_path_utils */
-char	**empty_map(char **map, t_validpath *check_path, int lines, int columns);
+char	**empty_map(char **map, t_validpath *path, int lines, int columns);
 char	**ft_arrdup(char **map, int lines, t_validpath *check_path);
-int	    cell_inbound(int i, int j, int lines, int columns);
+int		cell_inbound(int i, int j, int lines, int columns);
 void	invalid_path_exit(char **map, t_validpath *check_path, char *message);
 void	reset_visited(t_validpath *check_path);
+
+/* so_long_valid_path */
+void	valid_path(char **map, int lines, int columns, t_components *g_comps);
+
+/* so_long_utils */
+void	correct_extension(const char *argv);
+void	clean_exit(char *message);
+void	free_arr(char **arr);
+void	malloc_error(char *message, char **mem1, char **mem2);
+int		count_occurences(char *str, char c);
+
+/* so_long_valid_map */
+void	rectangular_check(char **map, int lines, int columns, int arr_len);
+void	valid_characters_check(char *line, char *valid_chars, char *map_string);
+void	cep0_check(char *map_str, t_components *game_comps);
+void	valid_walls(char **map, int lines, int columns);
+
+/* so_long_game_keys */
+int		move_up(t_game *game);
+int		move_down(t_game *game);
+int		move_left(t_game *game);
+int		move_right(t_game *game);
+void	update_window(t_game *game);
+
+/* so_long_game_utils */
+int		close_window(t_game *game);
+t_image	new_sprite(void *mlx, char *img_addr);
+
+/* so_long_game_utils */
+int		key_pressed(int key, t_game *game);
+void	sprite_init(t_game *game);
+void	assign_img(t_game *game, char c, int x, int y);
+int		load_image(t_game *game, char **map_arr);
+void	game_init(char **map_arr, t_components game_comps);
 
 #endif
