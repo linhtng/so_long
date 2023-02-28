@@ -52,8 +52,8 @@ int	path_to_exit(t_validpath *path, char start, char des, t_components *g_comps)
 			{
 				if (is_path(path, i, j, des))
 				{
-					g_comps->exit_pos.row = path->new_start_i;
-					g_comps->exit_pos.col = path->new_start_j;
+					g_comps->exit_pos.y = path->new_start_i;
+					g_comps->exit_pos.x = path->new_start_j;
 					return (1);
 				}
 			}
@@ -99,12 +99,12 @@ int	path_to_all_c(t_validpath *path, char start, char des, t_components *gcomps)
 		{
 			if (path->map[i][j] == start)
 			{
-				gcomps->player_pos.row = i;
-				gcomps->player_pos.col = j;
-				if (gcomps->collectibles == 1)
+				gcomps->player_pos.y = i;
+				gcomps->player_pos.x = j;
+				if (gcomps->c_num == 1)
 					return (is_path(path, i, j, des));
 				else
-					return (path_for_multi_c(path, i, j, gcomps->collectibles));
+					return (path_for_multi_c(path, i, j, gcomps->c_num));
 			}
 			j++;
 		}
@@ -127,7 +127,7 @@ void	valid_path(char **map, int lines, int columns, t_components *game_comps)
 	check_path->columns = columns;
 	check_path->map = ft_arrdup(map, lines, check_path);
 	check_path->visited = empty_map(map, check_path, lines, columns);
-	check_path->collects = game_comps->collectibles;
+	check_path->collects = game_comps->c_num;
 	if (path_to_all_c(check_path, 'P', 'C', game_comps))
 	{
 		if (!path_to_exit(check_path, 'C', 'E', game_comps))

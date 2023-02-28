@@ -56,10 +56,43 @@ void	assign_img(t_game *game, char c, int x, int y)
 		mlx_put_image_to_window(game->mlx, game->window, game->collect.sprite.reference, x, y);
 	if (c == 'P')
 		mlx_put_image_to_window(game->mlx, game->window, game->player.sprite.reference, x, y);
-	if (c == 'E' && game->game_comps.collectibles)
+	if (c == 'E' && game->comps.c_num)
 		mlx_put_image_to_window(game->mlx, game->window, game->exit.reference, x, y);
-	else if (c == 'E' && !game->game_comps.collectibles)
+	else if (c == 'E' && !game->comps.c_num)
 		mlx_put_image_to_window(game->mlx, game->window, game->exit_open.reference, x, y);
+}
+
+int	load_image_large_map(t_game *game, char **map_arr)
+{
+	int	row;;
+	int	col;
+	int	x;
+	int	y;
+
+	row = 0;
+	if (game->player.pos.y > MAX_HEIGHT - 3)
+		y = game->player.pos.y - MAX_HEIGHT + 3;
+	else
+		y = 0;
+	while (y < game->comps.lines) //&& row <= MAX_SIZE)
+	{
+		col = 0;
+		//ft_printf("y: %d\n", y);
+		//ft_printf("player y: %d\n", game->player.pos.y);
+		if (game->player.pos.x > MAX_WIDTH - 3)
+			x = game->player.pos.x - MAX_WIDTH + 3;
+		else
+			x = 0;
+		while (map_arr[y][x] != '\0') //&& col <= MAX_SIZE * 2)
+		{
+			assign_img(game, map_arr[y][x], col * SIZE, row * SIZE);
+			col++;
+			x++;
+		}
+		row++;
+		y++;
+	}
+	return (1);	
 }
 
 int	load_image(t_game *game, char **map_arr)
@@ -67,8 +100,11 @@ int	load_image(t_game *game, char **map_arr)
 	int	row;;
 	int	col;
 
+	if ((game->comps.lines > MAX_HEIGHT || game->comps.columns > MAX_WIDTH)  
+		&& (game->player.pos.y > MAX_HEIGHT - 3 || game->player.pos.x > MAX_WIDTH - 3))
+		return (load_image_large_map(game, map_arr));
 	row = 0;
-	while (row < game->game_comps.lines)
+	while (row < game->comps.lines)
 	{
 		col = 0;
 		while (map_arr[row][col] != '\0')
@@ -81,17 +117,25 @@ int	load_image(t_game *game, char **map_arr)
 	return (1);
 }
 
-void	game_init(char **map_arr, t_components game_comps)
+void	game_init(char **map_arr, t_components comps)
 {
 	t_game	game;
 
 	game.mlx = mlx_init();
-	game.window_height = game_comps.lines * SIZE;
-	game.window_width = game_comps.columns * SIZE;
+	if (comps.lines > MAX_HEIGHT)
+		game.window_height = MAX_HEIGHT * SIZE;
+	else
+		game.window_height = comps.lines * SIZE;
+	if (comps.columns > MAX_WIDTH)
+		game.window_width = MAX_WIDTH * SIZE;
+	else
+		game.window_width = comps.columns * SIZE;
+	//ft_printf("window height: %d\n", game.window_height);
+	//ft_printf("window width: %d\n", game.window_height);
 	game.window = mlx_new_window(game.mlx, game.window_width, game.window_height, "so_long");
 	game.map = map_arr;
-	game.game_comps = game_comps;
-	game.player.position = game_comps.player_pos;
+	game.comps = comps;
+	game.player.pos = comps.player_pos;
 	game.player.gone = 0;
 	game.moves = 0;
 	game.end_game = 0;

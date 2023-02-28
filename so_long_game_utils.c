@@ -23,8 +23,8 @@ t_image	new_sprite(void *mlx, char *img_addr)
 {
 	t_image	sprite;
 
-	sprite.size.col = 0;
-	sprite.size.row = 0;
-	sprite.reference = mlx_xpm_file_to_image(mlx, img_addr, &sprite.size.col, &sprite.size.row);
+	sprite.size.x = 0;
+	sprite.size.y = 0;
+	sprite.reference = mlx_xpm_file_to_image(mlx, img_addr, &sprite.size.x, &sprite.size.y);
 	return (sprite);
 }

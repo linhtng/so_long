@@ -53,7 +53,7 @@ void	cep0_check(char *map_str, t_components *game_comps)
 
 	exit_num = count_occurences(map_str, 'E');
 	collect = count_occurences(map_str, 'C');
-	game_comps->collectibles = collect;
+	game_comps->c_num = collect;
 	start_pos = count_occurences(map_str, 'P');
 	free_space = count_occurences(map_str, '0');
 	if (!(exit_num == 1 && collect >= 1 && start_pos == 1 && free_space >= 1))

@@ -79,11 +79,11 @@ void	game_comps_init(t_components *game_comps)
 {
 	game_comps->lines = 0;
 	game_comps->columns = 0;
-	game_comps->collectibles = 0;
-	game_comps->player_pos.row = 0;
-	game_comps->player_pos.col = 0;
-	game_comps->exit_pos.row = 0;
-	game_comps->exit_pos.col = 0;
+	game_comps->c_num = 0;
+	game_comps->player_pos.y = 0;
+	game_comps->player_pos.x = 0;
+	game_comps->exit_pos.y = 0;
+	game_comps->exit_pos.x = 0;
 }
 
 int	main(int argc, char **argv)
