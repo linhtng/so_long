@@ -14,10 +14,16 @@ NAME = so_long
 
 CFLAGS = -Wall -Wextra -Werror -g3
 
+LINKS = -lmlx -framework OpenGL -framework AppKit
+
 SRC = so_long_main.c \
 	so_long_utils.c \
 	so_long_valid_path.c \
 	so_long_valid_path_utils.c \
+	so_long_valid_map.c \
+	so_long_game.c \
+	so_long_game_keys.c \
+	so_long_game_utils.c
 
 OBJSFD 	= objs
 
@@ -45,7 +51,7 @@ $(OBJSFD)/%.o: %.c | $(OBJSFD)
 	gcc -g $(CFLAGS) $(HDR) $(FT_PRINTF_HDR) -c $< -o $@
 
 $(NAME): $(OBJS) $(FT_PRINTF) ./includes/so_long.h
-	gcc -g $(OBJS) $(FT_PRINTF_BINARY) -o $@
+	gcc -g $(OBJS) $(FT_PRINTF_BINARY) $(LINKS) -o $@
 
 clean:
 	rm -f $(OBJS)

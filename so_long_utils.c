@@ -57,32 +57,13 @@ int	count_occurences(char *str, char c)
 	return (count);
 }
 
-int	count_occurences_arr(char **arr, int lines, char c)
+void	correct_extension(const char *argv)
 {
-	int	count;
-	int	i;
+	size_t		len;
+	const char	*extension;
 
-	count = 0;
-	i = 0;
-	while (i < lines)
-	{
-		count += count_occurences(arr[i], c);
-		i++;
-	}
-	return (count);
-}
-
-void	print_arr(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i] != NULL)
-	{
-		ft_printf("%s\n", arr[i]);
-		//free(arr[i]);
-		i++;
-	}
-	//if (arr)
-		//free(arr);
+	len = ft_strlen(argv);
+	extension = ft_strnstr(argv, ".ber", len);
+	if (!extension || ft_strlen(extension) != 4)
+		clean_exit("Map must have .ber extension\n");
 }
