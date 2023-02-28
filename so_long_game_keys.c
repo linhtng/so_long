@@ -103,7 +103,7 @@ int	move_right(t_game *game)
 void	update_window(t_game *game)
 {
 	if (game->player.pos.x == game->comps.exit_pos.x
-		&& game->player.pos.y == game->comps.exit_pos.x && !game->comps.c_num)
+		&& game->player.pos.y == game->comps.exit_pos.y && !game->comps.c_num)
 	{	
 		game->map[game->player.pos.y][game->player.pos.x] = '0';
 		game->end_game = 1;
