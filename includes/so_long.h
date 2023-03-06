@@ -6,7 +6,7 @@
 /*   By: thuynguy <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/09 18:11:05 by thuynguy          #+#    #+#             */
-/*   Updated: 2023/02/28 17:01:54 by thuynguy         ###   ########.fr       */
+/*   Updated: 2023/03/05 14:49:24 by thuynguy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef SO_LONG_H
@@ -17,13 +17,12 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-# include <unistd.h>
 # ifndef SIZE
 #  define SIZE 32
-#  ifndef MAX_HEIGHT
-#   define MAX_HEIGHT 49
-#   ifndef MAX_WIDTH
-#    define MAX_WIDTH 88
+#  ifndef MAX_HGT
+#   define MAX_HGT 40
+#   ifndef MAX_WD
+#    define MAX_WD 80
 #   endif
 #  endif
 # endif
@@ -65,15 +64,9 @@ typedef struct s_components
 
 typedef struct s_image
 {
-	void		*reference;
+	void		*ref;
 	t_vector	size;
 }	t_image;
-
-typedef struct s_collect
-{
-	t_image		sprite;
-	t_vector	position;
-}	t_collect;
 
 typedef struct s_player
 {
@@ -86,15 +79,14 @@ typedef struct s_game
 {
 	void			*mlx;
 	void			*window;
-	t_collect		collect;
 	t_player		player;
+	t_image			collect;
 	t_image			wall;
 	t_image			exit;
 	t_image			exit_open;
-	t_image			floor;
 	char			**map;
-	int				window_height;
-	int				window_width;
+	int				size_y;
+	int				size_x;
 	int				moves;
 	int				end_game;
 	int				passed_exit;
@@ -134,6 +126,7 @@ void	update_window(t_game *game);
 /* so_long_game_utils */
 int		close_window(t_game *game);
 t_image	new_sprite(void *mlx, char *img_addr);
+void	sprite_init(t_game *game);
 
 /* so_long_game_utils */
 int		key_pressed(int key, t_game *game);
