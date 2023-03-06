@@ -6,12 +6,11 @@
 /*   By: thuynguy <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 13:20:59 by thuynguy          #+#    #+#             */
-/*   Updated: 2023/02/23 13:21:49 by thuynguy         ###   ########.fr       */
+/*   Updated: 2023/03/05 14:47:52 by thuynguy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-
 
 void	rectangular_check(char **map, int lines, int columns, int arr_len)
 {
@@ -22,7 +21,6 @@ void	rectangular_check(char **map, int lines, int columns, int arr_len)
 	{
 		free_arr(map);
 		clean_exit("Map must be rectangular\n");
-		exit(0);
 	}
 }
 

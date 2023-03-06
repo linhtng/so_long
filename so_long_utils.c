@@ -16,7 +16,7 @@ void	clean_exit(char *message)
 {
 	ft_putstr_fd("Error\n", 2);
 	ft_putstr_fd(message, 2);
-	exit(0);
+	exit(EXIT_FAILURE);
 }
 
 void	malloc_error(char *message, char **mem1, char **mem2)
@@ -46,6 +46,8 @@ int	count_occurences(char *str, char c)
 	int	count;
 	int	i;
 
+	if (!str)
+		return (0);
 	count = 0;
 	i = 0;
 	while (str[i])

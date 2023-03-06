@@ -16,7 +16,7 @@ int	close_window(t_game *game)
 {
 	mlx_destroy_window(game->mlx, game->window);
 	free_arr(game->map);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 t_image	new_sprite(void *mlx, char *img_addr)
@@ -29,18 +29,18 @@ t_image	new_sprite(void *mlx, char *img_addr)
 	return (img);
 }
 
-void	assign_img(t_game *game, char c, int x, int y)
+void	assign_img(t_game *g, char c, int x, int y)
 {
 	if (c == '1')
-		mlx_put_image_to_window(game->mlx, game->window, game->wall.ref, x, y);
+		mlx_put_image_to_window(g->mlx, g->window, g->wall.ref, x, y);
 	if (c == 'C')
-		mlx_put_image_to_window(game->mlx, game->window, game->collect.ref, x, y);
+		mlx_put_image_to_window(g->mlx, g->window, g->collect.ref, x, y);
 	if (c == 'P')
-		mlx_put_image_to_window(game->mlx, game->window, game->player.sprite.ref, x, y);
-	if (c == 'E' && game->comps.c_num)
-		mlx_put_image_to_window(game->mlx, game->window, game->exit.ref, x, y);
-	else if (c == 'E' && !game->comps.c_num)
-		mlx_put_image_to_window(game->mlx, game->window, game->exit_open.ref, x, y);
+		mlx_put_image_to_window(g->mlx, g->window, g->player.sprite.ref, x, y);
+	if (c == 'E' && g->comps.c_num)
+		mlx_put_image_to_window(g->mlx, g->window, g->exit.ref, x, y);
+	else if (c == 'E' && !g->comps.c_num)
+		mlx_put_image_to_window(g->mlx, g->window, g->exit_open.ref, x, y);
 }
 
 void	sprite_init(t_game *game)
@@ -50,5 +50,4 @@ void	sprite_init(t_game *game)
 	game->player.sprite = new_sprite(game->mlx, "./sprites/player0.xpm");
 	game->exit = new_sprite(game->mlx, "./sprites/door02.xpm");
 	game->exit_open = new_sprite(game->mlx, "./sprites/door02.o.xpm");
-	game->floor = new_sprite(game->mlx, "./sprites/floor.xpm");
 }
