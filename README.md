@@ -1,5 +1,5 @@
 <h1 align="center">
-	📖 So_long 
+	🎮 So_long 
 </h1>
 <p align="center">
 	<b><i>And thanks for all the keys!🔑</i></b><br>
