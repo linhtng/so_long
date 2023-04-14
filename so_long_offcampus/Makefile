@@ -2,9 +2,9 @@ NAME = so_long
 
 CFLAGS = -Wall -Wextra -Werror -g3
 
-MINILIBX	= ./includes/minilibx_macos
+MINILIBX	= ./includes/minilibx/minilibx_macos
 
-MINILIBXCC	= -I mlx -L ./includes/minilibx_macos -lmlx
+MINILIBXCC	= -I mlx -L ./includes/minilibx/minilibx_macos -lmlx
 OPENGL		= -framework OpenGL -framework AppKit
 
 LINKS = -lmlx -framework OpenGL -framework AppKit
