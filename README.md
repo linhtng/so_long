@@ -7,7 +7,6 @@
 
 <p align="center">
 	<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/linhtng/so_long?color=lightblue" />
-	<img alt="Number of lines of code" src="https://img.shields.io/tokei/lines/github/linhtng/so_long?color=critical" />
 	<img alt="Code language count" src="https://img.shields.io/github/languages/count/linhtng/so_long?color=yellow" />
 	<img alt="GitHub top language" src="https://img.shields.io/github/languages/top/linhtng/so_long?color=blue" />
 	<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/linhtng/so_long?color=green" />
@@ -17,9 +16,11 @@
 
 ## 💡 About the project
 This project is a very small 2D game. Its purpose is to make you work with textures, sprites, and some other very basic gameplay elements.
-In my case, the game is about a pink monster picking up all the keys to open the dungeon door and exit.
+In my case, the game is about a pink monster picking up all the keys to open the dungeon door and exit. 
 
 ![](so_long_small_map_demo.gif)
+
+The game implements a [flood fill](https://en.wikipedia.org/wiki/Flood_fill) -like algorithm to validate paths in a game map, ensuring that the player can reach all collectibles and the exit. A recursive function `is_path` looks for the target cells in the map array and return success if there is a connected path to it from the start cell. Initially, the start cell will be the player's spawning cell and the 1st target cell will be its closest collectible cell. Upon success, we run the same path searching function with the starting and target cells change from the next collectible to another, and eventually, from the last collectible to the exit.
 
 ### How to play
 ---
