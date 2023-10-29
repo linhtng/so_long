@@ -58,5 +58,9 @@ make
 #### Usage
 Passing the map you want to play as parameter (``./so_long map_file_input.ber``)
 
+## Acknowledgement
+
+The developer would like to thank [craftpix](https://free-game-assets.itch.io/free-tiny-hero-sprites-pixel-art) for the free sprite assets masking the demo for the game.
+
 ---
 ###### For more detailed information about the subject requirement, look at the [so_long.pdf](https://github.com/linhtng/so_long/files/11149130/so_long.pdf) and [so_long_eval_form.pdf](https://github.com/linhtng/so_long/files/11149132/so_long_eval_form.pdf)
